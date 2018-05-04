@@ -2,7 +2,7 @@
 
 #![no_std]
 #![no_main]
-#![feature(asm,const_fn,lang_items)]
+#![feature(asm, const_fn, lang_items)]
 
 extern crate capsules;
 extern crate cortexm4;
@@ -10,28 +10,32 @@ extern crate cortexm4;
 extern crate kernel;
 extern crate sam4l;
 
-use kernel::Platform;
 use kernel::hil;
 use kernel::hil::Controller;
+use kernel::Platform;
 
 #[macro_use]
 pub mod io;
-
 
 // No processes are supported.
 static mut PROCESSES: [Option<&'static mut kernel::Process<'static>>; 1] = [None];
 
 struct HailBootloader {
-    bootloader: &'static capsules::bootloader::Bootloader<'static, sam4l::usart::USART, sam4l::flashcalw::FLASHCALW, sam4l::gpio::GPIOPin>,
+    bootloader: &'static capsules::bootloader::Bootloader<
+        'static,
+        sam4l::usart::USART,
+        sam4l::flashcalw::FLASHCALW,
+        sam4l::gpio::GPIOPin,
+    >,
     led: &'static capsules::led::LED<'static, sam4l::gpio::GPIOPin>,
     ipc: kernel::ipc::IPC,
 }
 
 impl Platform for HailBootloader {
     fn with_driver<F, R>(&self, driver_num: usize, f: F) -> R
-        where F: FnOnce(Option<&kernel::Driver>) -> R
+    where
+        F: FnOnce(Option<&kernel::Driver>) -> R,
     {
-
         // Bootloader does not support apps.
         match driver_num {
             _ => f(None),
@@ -39,17 +43,16 @@ impl Platform for HailBootloader {
     }
 }
 
-
 unsafe fn set_pin_primary_functions() {
-    use sam4l::gpio::{PA, PB};
     use sam4l::gpio::PeripheralFunction::{A, B};
+    use sam4l::gpio::{PA, PB};
 
     PA[04].configure(Some(A)); // A0 - ADC0
     PA[05].configure(Some(A)); // A1 - ADC1
     PA[06].configure(Some(A)); // DAC
     PA[07].configure(None); //... WKP - Wakeup
     PA[08].configure(None); //... Bootloader select pin.
-    // PA[08].configure(Some(A)); //... Bootloader select pin.
+                            // PA[08].configure(Some(A)); //... Bootloader select pin.
     PA[09].configure(None); //... ACC_INT1 - FXOS8700CQ Interrupt 1
     PA[10].configure(None); //... unused
     PA[11].configure(Some(A)); // FTDI_OUT - USART0 RX FTDI->SAM4L
@@ -62,17 +65,17 @@ unsafe fn set_pin_primary_functions() {
     PA[18].configure(None); //... ACC_INT2 - FXOS8700CQ Interrupt 2
     PA[19].configure(None); //... unused
     PA[20].configure(None); //... !LIGHT_INT - ISL29035 Light Sensor Interrupt
-    // SPI Mode
+                            // SPI Mode
     PA[21].configure(Some(A)); // D3 - SPI MISO
     PA[22].configure(Some(A)); // D2 - SPI MOSI
     PA[23].configure(Some(A)); // D4 - SPI SCK
     PA[24].configure(Some(A)); // D5 - SPI CS0
-    // // I2C MODE
-    // PA[21].configure(None); // D3
-    // PA[22].configure(None); // D2
-    // PA[23].configure(Some(B)); // D4 - TWIMS0 SDA
-    // PA[24].configure(Some(B)); // D5 - TWIMS0 SCL
-    // UART Mode
+                               // // I2C MODE
+                               // PA[21].configure(None); // D3
+                               // PA[22].configure(None); // D2
+                               // PA[23].configure(Some(B)); // D4 - TWIMS0 SDA
+                               // PA[24].configure(Some(B)); // D5 - TWIMS0 SCL
+                               // UART Mode
     PA[25].configure(Some(B)); // RX - USART2 RXD
     PA[26].configure(Some(B)); // TX - USART2 TXD
 
@@ -112,34 +115,53 @@ pub unsafe fn reset_handler() {
 
     sam4l::flashcalw::FLASH_CONTROLLER.configure();
     let bootloader = static_init!(
-        capsules::bootloader::Bootloader<'static, sam4l::usart::USART, sam4l::flashcalw::FLASHCALW, sam4l::gpio::GPIOPin>,
-        capsules::bootloader::Bootloader::new(&sam4l::usart::USART0,
+        capsules::bootloader::Bootloader<
+            'static,
+            sam4l::usart::USART,
+            sam4l::flashcalw::FLASHCALW,
+            sam4l::gpio::GPIOPin,
+        >,
+        capsules::bootloader::Bootloader::new(
+            &sam4l::usart::USART0,
             &mut sam4l::flashcalw::FLASH_CONTROLLER,
             &sam4l::gpio::PA[08],
             &sam4l::gpio::PA[13],
             &sam4l::gpio::PB[14],
-                     &mut PAGEBUFFER,
-                     &mut capsules::bootloader::BUF));
+            &mut PAGEBUFFER,
+            &mut capsules::bootloader::BUF
+        )
+    );
     hil::uart::UART::set_client(&sam4l::usart::USART0, bootloader);
     hil::flash::HasClient::set_client(&sam4l::flashcalw::FLASH_CONTROLLER, bootloader);
 
     // LEDs
     let led_pins = static_init!(
         [(&'static sam4l::gpio::GPIOPin, capsules::led::ActivationMode); 3],
-        [(&sam4l::gpio::PA[13], capsules::led::ActivationMode::ActiveLow),   // Red
-         (&sam4l::gpio::PA[15], capsules::led::ActivationMode::ActiveLow),   // Green
-         (&sam4l::gpio::PA[14], capsules::led::ActivationMode::ActiveLow)]); // Blue
+        [
+            (
+                &sam4l::gpio::PA[13],
+                capsules::led::ActivationMode::ActiveLow
+            ), // Red
+            (
+                &sam4l::gpio::PA[15],
+                capsules::led::ActivationMode::ActiveLow
+            ), // Green
+            (
+                &sam4l::gpio::PA[14],
+                capsules::led::ActivationMode::ActiveLow
+            ),
+        ]
+    ); // Blue
     let led = static_init!(
         capsules::led::LED<'static, sam4l::gpio::GPIOPin>,
-        capsules::led::LED::new(led_pins));
+        capsules::led::LED::new(led_pins)
+    );
 
     let hail = HailBootloader {
         bootloader: bootloader,
         led: led,
         ipc: kernel::ipc::IPC::new(),
     };
-
-
 
     sam4l::gpio::PA[13].enable();
     sam4l::gpio::PA[13].enable_output();
@@ -148,8 +170,6 @@ pub unsafe fn reset_handler() {
     sam4l::gpio::PB[14].enable();
     sam4l::gpio::PB[14].enable_output();
     sam4l::gpio::PB[14].clear();
-
-
 
     let mut chip = sam4l::chip::Sam4l::new();
 
