@@ -301,7 +301,6 @@ pub struct Bootloader<'a, U: hil::uart::UARTAdvanced + 'a, F: hil::flash::Flash 
     select_pin: &'a G,
     led: &'a G,
     dpin: &'a G,
-    /// Buffer correctly sized for the underlying flash page size.
     page_buffer: TakeCell<'static, F::Page>,
     buffer: TakeCell<'static, [u8]>,
     state: Cell<State>,
@@ -434,7 +433,6 @@ impl<'a, U: hil::uart::UARTAdvanced + 'a, F: hil::flash::Flash + 'a, G: hil::gpi
                         rx_len: usize,
                         error: hil::uart::Error) {
 
-
         if error != hil::uart::Error::CommandComplete {
             // self.led.clear();
             return
@@ -451,7 +449,6 @@ impl<'a, U: hil::uart::UARTAdvanced + 'a, F: hil::flash::Flash + 'a, G: hil::gpi
             match decoder.receive(buffer[i]) {
                 Ok(None) => {},
                 Ok(Some(tockloader_proto::Command::Ping)) => {
-
                     self.buffer.replace(buffer);
                     self.send_response(RES_PONG);
                     break;
@@ -579,8 +576,6 @@ impl<'a, U: hil::uart::UARTAdvanced + 'a, F: hil::flash::Flash + 'a, G: hil::gpi
 
 impl<'a, U: hil::uart::UARTAdvanced + 'a, F: hil::flash::Flash + 'a, G: hil::gpio::Pin + 'a> hil::flash::Client<F> for Bootloader<'a, U, F, G> {
     fn read_complete(&self, pagebuffer: &'static mut F::Page, _error: hil::flash::Error) {
-
-
         match self.state.get() {
 
             // We just read the bootloader info page (page 2). Extract the
@@ -706,6 +701,7 @@ impl<'a, U: hil::uart::UARTAdvanced + 'a, F: hil::flash::Flash + 'a, G: hil::gpi
                 });
             }
 
+            // We have some data to calculate the CRC on.
             State::Crc{address, remaining_length, crc} => {
                 let page_size = pagebuffer.as_mut().len();
                 // This will get us our offset into the page.
@@ -752,10 +748,6 @@ impl<'a, U: hil::uart::UARTAdvanced + 'a, F: hil::flash::Flash + 'a, G: hil::gpi
 
             _ => {}
         }
-
-
-
-
     }
 
     fn write_complete(&self, pagebuffer: &'static mut F::Page, _error: hil::flash::Error) {
