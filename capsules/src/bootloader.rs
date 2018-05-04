@@ -464,13 +464,10 @@ impl<'a, U: hil::uart::UARTAdvanced + 'a, F: hil::flash::Flash + 'a, G: hil::gpi
 
          // if self.pinged.get() == true  {
          //            self.led.clear();
-         //                    self.uart.transmit(buffer, rx_len);
          //                    return;
 
          //    }
-if self.pinged.get() == false && rx_len == 600 {
-    self.led.clear();
-}
+
 
 
         let mut decoder = tockloader_proto::CommandDecoder::new();
@@ -618,13 +615,6 @@ if self.pinged.get() == false && rx_len == 600 {
         }
 
         if need_reset {
-
-            // if self.pinged.get() == true  {
-            //         self.led.clear();
-            //                 // self.uart.transmit(buffer, rx_len);
-            //                 // return;
-
-            // }
             decoder.reset();
 
             self.buffer.take().map(|buffer| {
@@ -768,6 +758,10 @@ impl<'a, U: hil::uart::UARTAdvanced + 'a, F: hil::flash::Flash + 'a, G: hil::gpi
                 // Length is either the rest of the page or how much we have left.
                 let len = cmp::min(page_size - page_index, remaining_length as usize);
 
+if len == 512 {
+    self.led.clear();
+}
+
                 // Iterate all bytes in the page that are relevant to the CRC
                 // and include them in the CRC calculation.
                 let mut new_crc = crc;
@@ -783,6 +777,8 @@ impl<'a, U: hil::uart::UARTAdvanced + 'a, F: hil::flash::Flash + 'a, G: hil::gpi
 
                 // Check if we are done
                 if new_remaining_length == 0 {
+                    new_crc = new_crc ^ 0xFFFFFFFF;
+
                     self.state.set(state::Idle);
                     self.buffer.take().map(move |buffer| {
                         buffer[0] = ESCAPE_CHAR;
