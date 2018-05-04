@@ -314,8 +314,6 @@ pub struct Bootloader<
     uart: &'a U,
     flash: &'a F,
     select_pin: &'a G,
-    led: &'a G,
-    dpin: &'a G,
     page_buffer: TakeCell<'static, F::Page>,
     buffer: TakeCell<'static, [u8]>,
     state: Cell<State>,
@@ -328,8 +326,6 @@ impl<'a, U: hil::uart::UARTAdvanced + 'a, F: hil::flash::Flash + 'a, G: hil::gpi
         uart: &'a U,
         flash: &'a F,
         select_pin: &'a G,
-        led: &'a G,
-        dpin: &'a G,
         page_buffer: &'static mut F::Page,
         buffer: &'static mut [u8],
     ) -> Bootloader<'a, U, F, G> {
@@ -337,8 +333,6 @@ impl<'a, U: hil::uart::UARTAdvanced + 'a, F: hil::flash::Flash + 'a, G: hil::gpi
             uart: uart,
             flash: flash,
             select_pin: select_pin,
-            led: led,
-            dpin: dpin,
             page_buffer: TakeCell::new(page_buffer),
             buffer: TakeCell::new(buffer),
             state: Cell::new(State::Idle),
@@ -374,16 +368,7 @@ impl<'a, U: hil::uart::UARTAdvanced + 'a, F: hil::flash::Flash + 'a, G: hil::gpi
         // Looks like we do want bootloader mode.
 
         self.buffer.take().map(|buffer| {
-            self.dpin.toggle();
-            self.led.toggle();
             self.uart.receive_automatic(buffer, 250);
-            // self.uart.receive(buffer, 2);
-            // buffer[0] = 97;
-            // buffer[1] = 98;
-            // buffer[2] = 100;
-            // buffer[3] = 105;
-            // buffer[4] = 110;
-            // self.uart.transmit(buffer, 5);
         });
 
         // } else {

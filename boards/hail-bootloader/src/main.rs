@@ -27,7 +27,6 @@ struct HailBootloader {
         sam4l::flashcalw::FLASHCALW,
         sam4l::gpio::GPIOPin,
     >,
-    led: &'static capsules::led::LED<'static, sam4l::gpio::GPIOPin>,
     ipc: kernel::ipc::IPC,
 }
 
@@ -52,7 +51,6 @@ unsafe fn set_pin_primary_functions() {
     PA[06].configure(Some(A)); // DAC
     PA[07].configure(None); //... WKP - Wakeup
     PA[08].configure(None); //... Bootloader select pin.
-                            // PA[08].configure(Some(A)); //... Bootloader select pin.
     PA[09].configure(None); //... ACC_INT1 - FXOS8700CQ Interrupt 1
     PA[10].configure(None); //... unused
     PA[11].configure(Some(A)); // FTDI_OUT - USART0 RX FTDI->SAM4L
@@ -125,8 +123,6 @@ pub unsafe fn reset_handler() {
             &sam4l::usart::USART0,
             &mut sam4l::flashcalw::FLASH_CONTROLLER,
             &sam4l::gpio::PA[08],
-            &sam4l::gpio::PA[13],
-            &sam4l::gpio::PB[14],
             &mut PAGEBUFFER,
             &mut capsules::bootloader::BUF
         )
@@ -134,42 +130,10 @@ pub unsafe fn reset_handler() {
     hil::uart::UART::set_client(&sam4l::usart::USART0, bootloader);
     hil::flash::HasClient::set_client(&sam4l::flashcalw::FLASH_CONTROLLER, bootloader);
 
-    // LEDs
-    let led_pins = static_init!(
-        [(&'static sam4l::gpio::GPIOPin, capsules::led::ActivationMode); 3],
-        [
-            (
-                &sam4l::gpio::PA[13],
-                capsules::led::ActivationMode::ActiveLow
-            ), // Red
-            (
-                &sam4l::gpio::PA[15],
-                capsules::led::ActivationMode::ActiveLow
-            ), // Green
-            (
-                &sam4l::gpio::PA[14],
-                capsules::led::ActivationMode::ActiveLow
-            ),
-        ]
-    ); // Blue
-    let led = static_init!(
-        capsules::led::LED<'static, sam4l::gpio::GPIOPin>,
-        capsules::led::LED::new(led_pins)
-    );
-
     let hail = HailBootloader {
         bootloader: bootloader,
-        led: led,
         ipc: kernel::ipc::IPC::new(),
     };
-
-    sam4l::gpio::PA[13].enable();
-    sam4l::gpio::PA[13].enable_output();
-    sam4l::gpio::PA[13].clear();
-
-    sam4l::gpio::PB[14].enable();
-    sam4l::gpio::PB[14].enable_output();
-    sam4l::gpio::PB[14].clear();
 
     let mut chip = sam4l::chip::Sam4l::new();
 
