@@ -18,7 +18,7 @@ use kernel::Platform;
 pub mod io;
 
 // No processes are supported.
-static mut PROCESSES: [Option<&'static mut kernel::Process<'static>>; 1] = [None];
+static mut PROCESSES: [Option<&'static mut kernel::Process<'static>>; 0] = [];
 
 struct HailBootloader {
     bootloader: &'static capsules::bootloader::Bootloader<
