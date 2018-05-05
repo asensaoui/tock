@@ -1,4 +1,4 @@
-#![feature(const_fn, const_cell_new)]
+#![feature(const_fn, const_cell_new, asm)]
 #![forbid(unsafe_code)]
 #![no_std]
 
@@ -56,3 +56,4 @@ pub mod ieee802154;
 pub mod temperature;
 //pub mod nrf_internal_temp_sensor;
 pub mod bootloader;
+pub mod bootloader_crc;
