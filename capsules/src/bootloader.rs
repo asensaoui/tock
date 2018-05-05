@@ -113,7 +113,6 @@ impl<'a, U: hil::uart::UARTAdvanced + 'a, F: hil::flash::Flash + 'a, G: hil::gpi
             self.buffer.take().map(|buffer| {
                 self.uart.receive_automatic(buffer, 250);
             });
-
         } else {
             // Jump to the kernel and start the real code.
             self.jump();
