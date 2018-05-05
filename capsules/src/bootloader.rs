@@ -131,8 +131,6 @@ impl<'a, U: hil::uart::UARTAdvanced + 'a, F: hil::flash::Flash + 'a, G: hil::gpi
 
     fn jump(&self) {
 
-
-
         // asm!(
         //         ".syntax unified                        \n\
         //         .section .text.jumpfunc                 \n\

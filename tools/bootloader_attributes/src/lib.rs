@@ -10,13 +10,15 @@ pub static ATTRIBUTES_FILE: &'static str = "attributes.rs";
 
 /// Write the "flags" region as an array.
 pub fn write_flags<W: Write>(dest: &mut W, page_size: usize, version: &str) {
-    let _ = write!(dest,
-                   "
+    let _ = write!(
+        dest,
+        "
 #[link_section=\".flags\"]
 #[no_mangle]
 pub static FLAGS: [u8; {}] = [
     ",
-                   page_size);
+        page_size
+    );
 
     // Boot in bootloader identifier flag.
     for byte in "TOCKBOOTLOADER".bytes().chain(iter::repeat(0)).take(14) {
@@ -40,14 +42,16 @@ pub static FLAGS: [u8; {}] = [
 /// Takes an attribute name and value and writes valid Rust to create a
 /// bootloader attribute.
 pub fn write_attribute<W: Write>(dest: &mut W, name: &str, value: &str) {
-    let _ = write!(dest,
-                   "
+    let _ = write!(
+        dest,
+        "
 #[link_section=\".attribute.{}\"]
 #[no_mangle]
 pub static ATTRIBUTE_{}: [u8; 64] = [
     ",
-                   name,
-                   name.to_ascii_uppercase());
+        name,
+        name.to_ascii_uppercase()
+    );
 
     // Write up to 8 bytes of name ; zero-pad up to 8 bytes
     for byte in name.bytes().chain(iter::repeat(0)).take(8) {
