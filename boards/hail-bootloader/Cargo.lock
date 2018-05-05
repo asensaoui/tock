@@ -1,4 +1,8 @@
 [[package]]
+name = "bootloader_attributes"
+version = "0.1.0"
+
+[[package]]
 name = "byteorder"
 version = "1.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -22,6 +26,7 @@ dependencies = [
 name = "hailbootloader"
 version = "0.1.0"
 dependencies = [
+ "bootloader_attributes 0.1.0",
  "capsules 0.1.0",
  "cortexm4 0.1.0",
  "kernel 0.1.0",

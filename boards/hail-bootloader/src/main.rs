@@ -17,6 +17,8 @@ use kernel::Platform;
 #[macro_use]
 pub mod io;
 
+include!(concat!(env!("OUT_DIR"), "/attributes.rs"));
+
 // No processes are supported.
 static mut PROCESSES: [Option<&'static mut kernel::Process<'static>>; 0] = [];
 

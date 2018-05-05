@@ -19,3 +19,6 @@ cortexm4 = { path = "../../arch/cortex-m4" }
 capsules = { path = "../../capsules" }
 kernel = { path = "../../kernel" }
 sam4l = { path = "../../chips/sam4l" }
+
+[build-dependencies]
+bootloader_attributes = { path = "../../tools/bootloader_attributes" }

@@ -50,7 +50,7 @@ __stack_size__ = DEFINED(__stack_size__) ? __stack_size__ : 0x1000;
 SECTIONS
 {
     /* STATIC ELEMENTS FOR TOCK KERNEL */
-    .text :
+    .vector_table :
     {
         . = ALIGN(4);
         _textstart = .;         /* Symbol expected by some MS build toolchains */
@@ -66,7 +66,24 @@ SECTIONS
          */
         KEEP(*(.vectors .vectors.*))
         KEEP(*(.irqs))
+        . = 1024;
+    } > rom
 
+    .attribute :
+    {
+        _attribute_table_start = .;
+        KEEP(*(.flags))
+        /* Start attributes on next page */
+        FILL(0x0)
+        . = _attribute_table_start + 512;
+        /* Remaining attributes */
+        KEEP(*(.attributes .attribute.*))
+        FILL(0x0)
+        . = _attribute_table_start + 1536;
+    } > rom
+
+    .text :
+    {
         /* .text and .rodata hold most program code and immutable constants */
         /* .gnu.linkonce hold C++ elements with vague linkage
                 https://gcc.gnu.org/onlinedocs/gcc/Vague-Linkage.html */
