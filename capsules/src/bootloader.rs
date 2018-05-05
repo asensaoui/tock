@@ -92,32 +92,32 @@ impl<'a, U: hil::uart::UARTAdvanced + 'a, F: hil::flash::Flash + 'a, G: hil::gpi
             hw_flow_control: false,
         });
 
-        // // self.select_pin.enable();
-        // self.select_pin.make_input();
+        self.select_pin.make_input();
 
-        // // Check the select pin to see if we should enter bootloader mode.
-        // let mut samples = 10000;
-        // let mut active = 0;
-        // let mut inactive = 0;
-        // while samples > 0 {
-        //     if self.select_pin.read() == false {
-        //         active += 1;
-        //     } else {
-        //         inactive += 1;
-        //     }
-        //     samples -= 1;
-        // }
+        // Check the select pin to see if we should enter bootloader mode.
+        let mut samples = 10000;
+        let mut active = 0;
+        let mut inactive = 0;
+        while samples > 0 {
+            if self.select_pin.read() == false {
+                active += 1;
+            } else {
+                inactive += 1;
+            }
+            samples -= 1;
+        }
 
-        // if active > inactive {
-        // Looks like we do want bootloader mode.
+        if active > inactive || true {
+            // Looks like we do want bootloader mode.
 
-        self.buffer.take().map(|buffer| {
-            self.uart.receive_automatic(buffer, 250);
-        });
+            self.buffer.take().map(|buffer| {
+                self.uart.receive_automatic(buffer, 250);
+            });
 
-        // } else {
-        //     // Jump to the kernel and start the real code.
-        // }
+        } else {
+            // Jump to the kernel and start the real code.
+            self.jump();
+        }
     }
 
     // Helper function for sending single byte responses.
