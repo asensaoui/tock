@@ -61,6 +61,7 @@ pub struct Bootloader<
     page_buffer: TakeCell<'static, F::Page>,
     buffer: TakeCell<'static, [u8]>,
     state: Cell<State>,
+    resetted: Cell<bool>,
 }
 
 impl<'a, U: hil::uart::UARTAdvanced + 'a, F: hil::flash::Flash + 'a, G: hil::gpio::Pin + 'a>
@@ -80,6 +81,7 @@ impl<'a, U: hil::uart::UARTAdvanced + 'a, F: hil::flash::Flash + 'a, G: hil::gpi
             page_buffer: TakeCell::new(page_buffer),
             buffer: TakeCell::new(buffer),
             state: Cell::new(State::Idle),
+            resetted: Cell::new(false),
         }
     }
 
@@ -92,26 +94,38 @@ impl<'a, U: hil::uart::UARTAdvanced + 'a, F: hil::flash::Flash + 'a, G: hil::gpi
             hw_flow_control: false,
         });
 
-        self.select_pin.make_input();
+        // self.select_pin.make_input();
+        self.select_pin.make_output();
+        self.select_pin.clear();
+        self.select_pin.set();
+        self.select_pin.clear();
+        self.select_pin.set();
+        self.select_pin.clear();
+        self.select_pin.set();
+        self.select_pin.clear();
+        self.select_pin.set();
+        self.select_pin.clear();
+        self.select_pin.set();
 
         // Check the select pin to see if we should enter bootloader mode.
-        let mut samples = 10000;
+        // let mut samples = 10000;
         let mut active = 0;
         let mut inactive = 0;
-        while samples > 0 {
-            if self.select_pin.read() == false {
-                active += 1;
-            } else {
-                inactive += 1;
-            }
-            samples -= 1;
-        }
+        // while samples > 0 {
+        //     if self.select_pin.read() == false {
+        //         active += 1;
+        //     } else {
+        //         inactive += 1;
+        //     }
+        //     samples -= 1;
+        // }
 
         if active > inactive || true {
             // Looks like we do want bootloader mode.
 
             self.buffer.take().map(|buffer| {
                 self.uart.receive_automatic(buffer, 250);
+    self.select_pin.clear();
             });
         } else {
             // Jump to the kernel and start the real code.
@@ -167,6 +181,7 @@ impl<'a, U: hil::uart::UARTAdvanced + 'a, F: hil::flash::Flash + 'a, G: hil::gpi
                     if remaining_length == 0 {
                         self.state.set(State::Idle);
                         self.uart.receive_automatic(buffer, 250);
+        self.select_pin.clear();
                     } else {
                         self.buffer.replace(buffer);
                         self.page_buffer.take().map(move |page| {
@@ -178,16 +193,32 @@ impl<'a, U: hil::uart::UARTAdvanced + 'a, F: hil::flash::Flash + 'a, G: hil::gpi
 
                 _ => {
                     self.uart.receive_automatic(buffer, 250);
+    self.select_pin.clear();
                 }
             }
         }
     }
 
     fn receive_complete(&self, buffer: &'static mut [u8], rx_len: usize, error: hil::uart::Error) {
+self.select_pin.set();
         if error != hil::uart::Error::CommandComplete {
             // self.led.clear();
             return;
         }
+
+
+
+
+
+        // // if self.resetted.get() == false {
+        //     // SYNC_MESSAGE = bytes([0x00, 0xFC, 0x05])
+        //     if rx_len > 3 && buffer[0] == 0 && buffer[1] == 0xfc && buffer[2] == 5 {
+        //         // buffer[0] = 0xfc;
+        //         // self.state.set(State::Idle);
+        //         // self.uart.transmit(buffer, 400);
+        //         // return;
+        //     }
+        // // }
 
         // Tool to parse incoming bootloader messages.
         let mut decoder = tockloader_proto::CommandDecoder::new();
@@ -195,10 +226,36 @@ impl<'a, U: hil::uart::UARTAdvanced + 'a, F: hil::flash::Flash + 'a, G: hil::gpi
         // decoder.
         let mut need_reset = false;
 
+
+
         // Loop through the buffer and pass it to the decoder.
         for i in 0..rx_len {
+
+
+            // Artifact of the original implementation of the bootloader protocol
+            // is the need to reset the pointer internal to the bootloader receive
+            // state machine.
+            if need_reset {
+                decoder.reset();
+                need_reset = false;
+
+                // self.buffer.take().map(|buffer| {
+                //     self.uart.receive_automatic(buffer, 250);
+                // });
+            }
+
+
+
+// let k = {
+//             let a = decoder.receive(buffer[i]);
+//             a
+// };
+            // match decoder.receive(buffer[i]) {
             match decoder.receive(buffer[i]) {
-                Ok(None) => {}
+                Ok(None) => {
+
+
+                }
                 Ok(Some(tockloader_proto::Command::Ping)) => {
                     self.buffer.replace(buffer);
                     self.send_response(RES_PONG);
@@ -206,8 +263,22 @@ impl<'a, U: hil::uart::UARTAdvanced + 'a, F: hil::flash::Flash + 'a, G: hil::gpi
                 }
                 Ok(Some(tockloader_proto::Command::Reset)) => {
                     need_reset = true;
-                    self.buffer.replace(buffer);
-                    break;
+
+                    // If there are more bytes in the buffer we want
+                    // to continue parsing those. Otherwise, we want
+                    // to go back to receive.
+                    if i == rx_len - 1 {
+                        self.uart.receive_automatic(buffer, 250);
+                        break;
+                    }
+
+
+        self.resetted.set(true);
+                    // self.buffer.replace(buffer);
+                    // self.uart.receive_automatic(buffer, 250);
+                    // decoder.reset();
+    self.select_pin.clear();
+                    // break;
                 }
                 Ok(Some(tockloader_proto::Command::Info)) => {
                     self.state.set(State::Info);
@@ -317,6 +388,9 @@ impl<'a, U: hil::uart::UARTAdvanced + 'a, F: hil::flash::Flash + 'a, G: hil::gpi
                     break;
                 }
             };
+
+
+
         }
 
         // Artifact of the original implementation of the bootloader protocol
@@ -324,11 +398,15 @@ impl<'a, U: hil::uart::UARTAdvanced + 'a, F: hil::flash::Flash + 'a, G: hil::gpi
         // state machine.
         if need_reset {
             decoder.reset();
+            need_reset = false;
 
-            self.buffer.take().map(|buffer| {
-                self.uart.receive_automatic(buffer, 250);
-            });
+            // self.buffer.take().map(|buffer| {
+            //     self.uart.receive_automatic(buffer, 250);
+            // });
         }
+
+
+
     }
 }
 
@@ -552,6 +630,7 @@ impl<'a, U: hil::uart::UARTAdvanced + 'a, F: hil::flash::Flash + 'a, G: hil::gpi
             _ => {
                 self.buffer.take().map(|buffer| {
                     self.uart.receive_automatic(buffer, 250);
+    self.select_pin.clear();
                 });
             }
         }
@@ -572,6 +651,7 @@ impl<'a, U: hil::uart::UARTAdvanced + 'a, F: hil::flash::Flash + 'a, G: hil::gpi
             _ => {
                 self.buffer.take().map(|buffer| {
                     self.uart.receive_automatic(buffer, 250);
+    self.select_pin.clear();
                 });
             }
         }

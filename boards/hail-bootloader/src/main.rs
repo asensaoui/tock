@@ -124,7 +124,8 @@ pub unsafe fn reset_handler() {
         capsules::bootloader::Bootloader::new(
             &sam4l::usart::USART0,
             &mut sam4l::flashcalw::FLASH_CONTROLLER,
-            &sam4l::gpio::PA[08],
+            // &sam4l::gpio::PA[08],
+            &sam4l::gpio::PB[12],
             &mut PAGEBUFFER,
             &mut capsules::bootloader::BUF
         )
