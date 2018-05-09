@@ -61,7 +61,6 @@ pub struct Bootloader<
     page_buffer: TakeCell<'static, F::Page>,
     buffer: TakeCell<'static, [u8]>,
     state: Cell<State>,
-    resetted: Cell<bool>,
 }
 
 impl<'a, U: hil::uart::UARTAdvanced + 'a, F: hil::flash::Flash + 'a, G: hil::gpio::Pin + 'a>
@@ -81,7 +80,6 @@ impl<'a, U: hil::uart::UARTAdvanced + 'a, F: hil::flash::Flash + 'a, G: hil::gpi
             page_buffer: TakeCell::new(page_buffer),
             buffer: TakeCell::new(buffer),
             state: Cell::new(State::Idle),
-            resetted: Cell::new(false),
         }
     }
 
@@ -206,50 +204,25 @@ self.select_pin.set();
             return;
         }
 
-
-
-
-
-        // // if self.resetted.get() == false {
-        //     // SYNC_MESSAGE = bytes([0x00, 0xFC, 0x05])
-        //     if rx_len > 3 && buffer[0] == 0 && buffer[1] == 0xfc && buffer[2] == 5 {
-        //         // buffer[0] = 0xfc;
-        //         // self.state.set(State::Idle);
-        //         // self.uart.transmit(buffer, 400);
-        //         // return;
-        //     }
-        // // }
-
         // Tool to parse incoming bootloader messages.
         let mut decoder = tockloader_proto::CommandDecoder::new();
         // Whether we want to reset the position in the buffer in the
         // decoder.
         let mut need_reset = false;
 
-
-
         // Loop through the buffer and pass it to the decoder.
         for i in 0..rx_len {
 
-
-            // Artifact of the original implementation of the bootloader protocol
-            // is the need to reset the pointer internal to the bootloader receive
-            // state machine.
+            // Artifact of the original implementation of the bootloader
+            // protocol is the need to reset the pointer internal to the
+            // bootloader receive state machine. This is here because we may
+            // have received two commands in the same buffer and we want to
+            // handle them both back-to-back.
             if need_reset {
                 decoder.reset();
                 need_reset = false;
-
-                // self.buffer.take().map(|buffer| {
-                //     self.uart.receive_automatic(buffer, 250);
-                // });
             }
 
-
-
-// let k = {
-//             let a = decoder.receive(buffer[i]);
-//             a
-// };
             // match decoder.receive(buffer[i]) {
             match decoder.receive(buffer[i]) {
                 Ok(None) => {
@@ -264,21 +237,12 @@ self.select_pin.set();
                 Ok(Some(tockloader_proto::Command::Reset)) => {
                     need_reset = true;
 
-                    // If there are more bytes in the buffer we want
-                    // to continue parsing those. Otherwise, we want
-                    // to go back to receive.
+                    // If there are more bytes in the buffer we want to continue
+                    // parsing those. Otherwise, we want to go back to receive.
                     if i == rx_len - 1 {
                         self.uart.receive_automatic(buffer, 250);
                         break;
                     }
-
-
-        self.resetted.set(true);
-                    // self.buffer.replace(buffer);
-                    // self.uart.receive_automatic(buffer, 250);
-                    // decoder.reset();
-    self.select_pin.clear();
-                    // break;
                 }
                 Ok(Some(tockloader_proto::Command::Info)) => {
                     self.state.set(State::Info);
@@ -388,9 +352,6 @@ self.select_pin.set();
                     break;
                 }
             };
-
-
-
         }
 
         // Artifact of the original implementation of the bootloader protocol
@@ -398,15 +359,7 @@ self.select_pin.set();
         // state machine.
         if need_reset {
             decoder.reset();
-            need_reset = false;
-
-            // self.buffer.take().map(|buffer| {
-            //     self.uart.receive_automatic(buffer, 250);
-            // });
         }
-
-
-
     }
 }
 
