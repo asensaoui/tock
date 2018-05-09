@@ -92,18 +92,7 @@ impl<'a, U: hil::uart::UARTAdvanced + 'a, F: hil::flash::Flash + 'a, G: hil::gpi
             hw_flow_control: false,
         });
 
-        // self.select_pin.make_input();
-        self.select_pin.make_output();
-        self.select_pin.clear();
-        self.select_pin.set();
-        self.select_pin.clear();
-        self.select_pin.set();
-        self.select_pin.clear();
-        self.select_pin.set();
-        self.select_pin.clear();
-        self.select_pin.set();
-        self.select_pin.clear();
-        self.select_pin.set();
+        self.select_pin.make_input();
 
         // Check the select pin to see if we should enter bootloader mode.
         // let mut samples = 10000;
@@ -123,7 +112,6 @@ impl<'a, U: hil::uart::UARTAdvanced + 'a, F: hil::flash::Flash + 'a, G: hil::gpi
 
             self.buffer.take().map(|buffer| {
                 self.uart.receive_automatic(buffer, 250);
-    self.select_pin.clear();
             });
         } else {
             // Jump to the kernel and start the real code.
@@ -179,7 +167,6 @@ impl<'a, U: hil::uart::UARTAdvanced + 'a, F: hil::flash::Flash + 'a, G: hil::gpi
                     if remaining_length == 0 {
                         self.state.set(State::Idle);
                         self.uart.receive_automatic(buffer, 250);
-        self.select_pin.clear();
                     } else {
                         self.buffer.replace(buffer);
                         self.page_buffer.take().map(move |page| {
@@ -191,14 +178,12 @@ impl<'a, U: hil::uart::UARTAdvanced + 'a, F: hil::flash::Flash + 'a, G: hil::gpi
 
                 _ => {
                     self.uart.receive_automatic(buffer, 250);
-    self.select_pin.clear();
                 }
             }
         }
     }
 
     fn receive_complete(&self, buffer: &'static mut [u8], rx_len: usize, error: hil::uart::Error) {
-self.select_pin.set();
         if error != hil::uart::Error::CommandComplete {
             // self.led.clear();
             return;
@@ -212,7 +197,6 @@ self.select_pin.set();
 
         // Loop through the buffer and pass it to the decoder.
         for i in 0..rx_len {
-
             // Artifact of the original implementation of the bootloader
             // protocol is the need to reset the pointer internal to the
             // bootloader receive state machine. This is here because we may
@@ -225,10 +209,7 @@ self.select_pin.set();
 
             // match decoder.receive(buffer[i]) {
             match decoder.receive(buffer[i]) {
-                Ok(None) => {
-
-
-                }
+                Ok(None) => {}
                 Ok(Some(tockloader_proto::Command::Ping)) => {
                     self.buffer.replace(buffer);
                     self.send_response(RES_PONG);
@@ -583,7 +564,6 @@ impl<'a, U: hil::uart::UARTAdvanced + 'a, F: hil::flash::Flash + 'a, G: hil::gpi
             _ => {
                 self.buffer.take().map(|buffer| {
                     self.uart.receive_automatic(buffer, 250);
-    self.select_pin.clear();
                 });
             }
         }
@@ -604,7 +584,6 @@ impl<'a, U: hil::uart::UARTAdvanced + 'a, F: hil::flash::Flash + 'a, G: hil::gpi
             _ => {
                 self.buffer.take().map(|buffer| {
                     self.uart.receive_automatic(buffer, 250);
-    self.select_pin.clear();
                 });
             }
         }
