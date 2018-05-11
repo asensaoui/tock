@@ -1,7 +1,7 @@
 //! User information configuration registers
 //! Minimal implementation to support activation of the reset button on nRF52-DK
 
-use kernel::common::regs::ReadWrite;
+use tock_regs::regs::ReadWrite;
 
 const UICR_BASE: usize = 0x10001200;
 

@@ -36,12 +36,12 @@
 use core::cell::Cell;
 use core::convert::TryFrom;
 use kernel;
-use kernel::common::regs::{ReadOnly, ReadWrite, WriteOnly};
 use kernel::hil::ble_advertising;
 use kernel::hil::ble_advertising::RadioChannel;
 use kernel::ReturnCode;
 use nrf5x;
 use nrf5x::constants::TxPower;
+use tock_regs::regs::{ReadOnly, ReadWrite, WriteOnly};
 
 const RADIO_BASE: usize = 0x40001000;
 

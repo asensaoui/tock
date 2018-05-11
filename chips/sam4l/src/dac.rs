@@ -6,10 +6,10 @@
 //! - Date: May 26th, 2017
 
 use core::cell::Cell;
-use kernel::common::regs::{ReadOnly, ReadWrite, WriteOnly};
 use kernel::hil;
 use kernel::ReturnCode;
 use pm::{self, Clock, PBAClock};
+use tock_regs::regs::{ReadOnly, ReadWrite, WriteOnly};
 
 #[repr(C)]
 pub struct DacRegisters {

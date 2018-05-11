@@ -5,6 +5,7 @@ authors = ["Tock Project Developers <tock-dev@googlegroups.com>"]
 
 [dependencies]
 kernel = { path = "../../kernel" }
+tock-regs = { path = "../../tock-register-interface" }
 
 [features]
 default = []

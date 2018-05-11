@@ -6,8 +6,8 @@ use core::cell::Cell;
 use core::cmp;
 use core::sync::atomic::{AtomicBool, Ordering};
 use dma;
-use kernel::common::regs::{ReadOnly, ReadWrite, WriteOnly};
 use kernel::ReturnCode;
+use tock_regs::regs::{ReadOnly, ReadWrite, WriteOnly};
 // other modules
 use kernel::hil;
 // local modules

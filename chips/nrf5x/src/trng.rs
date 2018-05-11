@@ -21,8 +21,8 @@
 //! * Date: March 01, 2017
 
 use core::cell::Cell;
-use kernel::common::regs::{ReadOnly, ReadWrite, WriteOnly};
 use kernel::hil::rng::{self, Continue};
+use tock_regs::regs::{ReadOnly, ReadWrite, WriteOnly};
 
 const RNG_BASE: usize = 0x4000D000;
 

@@ -8,7 +8,7 @@
 //! - Date: Aug 2, 2015
 
 use bscif;
-use kernel::common::regs::{FieldValue, ReadOnly, ReadWrite, WriteOnly};
+use tock_regs::regs::{FieldValue, ReadOnly, ReadWrite, WriteOnly};
 
 pub enum Register {
     IER = 0x00,

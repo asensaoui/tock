@@ -1,8 +1,8 @@
 //! ARM Cortex-M3 SysTick peripheral.
 
 use kernel;
-use kernel::common::regs::{ReadOnly, ReadWrite};
 use kernel::StaticRef;
+use tock_regs::regs::{ReadOnly, ReadWrite};
 
 #[repr(C)]
 struct SystickRegisters {

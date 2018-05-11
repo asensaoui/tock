@@ -2,8 +2,11 @@
 #![no_std]
 
 #[allow(unused_imports)]
-#[macro_use(debug, debug_gpio, register_bitfields, register_bitmasks)]
+#[macro_use(debug, debug_gpio)]
 extern crate kernel;
+
+#[macro_use(register_bitfields, register_bitmasks)]
+extern crate tock_regs;
 
 pub mod nvic;
 pub mod scb;

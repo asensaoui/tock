@@ -7,7 +7,6 @@ use self::debug::{HexBuf, UdintFlags, UeconFlags, UestaFlags};
 use core::cell::Cell;
 use core::ptr;
 use core::slice;
-use kernel::common::regs::{FieldValue, LocalRegisterCopy, ReadOnly, ReadWrite, WriteOnly};
 use kernel::common::VolatileCell;
 use kernel::hil;
 use kernel::hil::usb::*;
@@ -15,6 +14,7 @@ use kernel::StaticRef;
 use pm;
 use pm::{disable_clock, enable_clock, Clock, HSBClock, PBBClock};
 use scif;
+use tock_regs::regs::{FieldValue, LocalRegisterCopy, ReadOnly, ReadWrite, WriteOnly};
 
 // The following macros provide some diagnostics and panics(!)
 // while this module is experimental and should eventually be removed or

@@ -6,6 +6,9 @@
 #[macro_use]
 extern crate kernel;
 
+#[macro_use(register_bitfields, register_bitmasks)]
+extern crate tock_regs;
+
 pub mod aon;
 pub mod ccfg;
 pub mod gpio;

@@ -19,6 +19,7 @@ name = "cc26xx"
 version = "0.1.0"
 dependencies = [
  "kernel 0.1.0",
+ "tock-regs 0.1.0",
 ]
 
 [[package]]
@@ -26,6 +27,7 @@ name = "cortexm4"
 version = "0.1.0"
 dependencies = [
  "kernel 0.1.0",
+ "tock-regs 0.1.0",
 ]
 
 [[package]]
@@ -42,4 +44,8 @@ dependencies = [
  "cortexm4 0.1.0",
  "kernel 0.1.0",
 ]
+
+[[package]]
+name = "tock-regs"
+version = "0.1.0"
 

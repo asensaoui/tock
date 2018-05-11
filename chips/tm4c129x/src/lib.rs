@@ -7,8 +7,12 @@
 
 extern crate cortexm4;
 #[allow(unused_imports)]
-#[macro_use(debug, debug_gpio, static_init, register_bitfields, register_bitmasks)]
+#[macro_use(debug, debug_gpio, static_init)]
 extern crate kernel;
+
+#[allow(unused_imports)]
+#[macro_use(register_bitfields, register_bitmasks)]
+extern crate tock_regs;
 
 pub mod chip;
 pub mod gpio;

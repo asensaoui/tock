@@ -2,7 +2,7 @@
 // Used in order read and write to internal flash
 // Minimal implementation to support activation of the reset button
 
-use kernel::common::regs::{ReadOnly, ReadWrite};
+use tock_regs::regs::{ReadOnly, ReadWrite};
 
 pub const NVMC_BASE: usize = 0x4001E400;
 #[repr(C)]

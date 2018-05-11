@@ -10,9 +10,13 @@
 #![no_std]
 
 extern crate cortexm4;
+
 #[allow(unused_imports)]
-#[macro_use(debug, debug_gpio, static_init, register_bitfields, register_bitmasks)]
+#[macro_use(debug, debug_gpio, static_init)]
 extern crate kernel;
+
+#[macro_use(register_bitfields, register_bitmasks)]
+extern crate tock_regs;
 
 #[macro_use]
 mod helpers;

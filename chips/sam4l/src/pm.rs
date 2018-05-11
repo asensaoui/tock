@@ -6,9 +6,9 @@ use core::cell::Cell;
 use core::sync::atomic::Ordering;
 use flashcalw;
 use gpio;
-use kernel::common::regs::{FieldValue, ReadOnly, ReadWrite, WriteOnly};
 use kernel::{ClockInterface, StaticRef};
 use scif;
+use tock_regs::regs::{FieldValue, ReadOnly, ReadWrite, WriteOnly};
 
 /// §10.7 PM::UserInterface from SAM4L Datasheet.
 #[repr(C)]

@@ -1,9 +1,9 @@
 //! Implementation of the SAM4L TRNG.
 
 use core::cell::Cell;
-use kernel::common::regs::{ReadOnly, WriteOnly};
 use kernel::hil::rng::{self, Continue};
 use pm;
+use tock_regs::regs::{ReadOnly, WriteOnly};
 
 #[repr(C)]
 struct Registers {

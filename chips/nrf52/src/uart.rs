@@ -12,8 +12,8 @@ use core;
 use core::cell::Cell;
 use core::cmp::min;
 use kernel;
-use kernel::common::regs::{ReadOnly, ReadWrite, WriteOnly};
 use nrf5x::pinmux;
+use tock_regs::regs::{ReadOnly, ReadWrite, WriteOnly};
 
 const UARTE_BASE: u32 = 0x40002000;
 const UARTE_MAX_BUFFER_SIZE: u32 = 0xff;

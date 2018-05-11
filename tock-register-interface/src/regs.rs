@@ -34,9 +34,6 @@
 //! ];
 //! ```
 
-#[macro_use]
-pub mod macros;
-
 use core::fmt;
 use core::marker::PhantomData;
 use core::ops::{Add, AddAssign, BitAnd, BitOr, Not, Shl, Shr};

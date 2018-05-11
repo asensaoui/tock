@@ -2,11 +2,11 @@
 
 use core::cell::Cell;
 use kernel::common::math::log_base_two_u64;
-use kernel::common::regs::{FieldValue, ReadOnly, ReadWrite, WriteOnly};
 use kernel::hil;
 use kernel::support;
 use kernel::StaticRef;
 use pm::{self, Clock, PBDClock};
+use tock_regs::regs::{FieldValue, ReadOnly, ReadWrite, WriteOnly};
 
 #[repr(C)]
 pub struct WdtRegisters {

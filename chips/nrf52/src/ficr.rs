@@ -8,7 +8,7 @@
 //! - Date: November 27, 2017
 
 use core::fmt;
-use kernel::common::regs::ReadOnly;
+use tock_regs::regs::ReadOnly;
 
 const FICR_BASE_ADDRESS: usize = 0x10000000;
 

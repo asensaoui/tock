@@ -41,5 +41,10 @@ name = "nrf5x"
 version = "0.1.0"
 dependencies = [
  "kernel 0.1.0",
+ "tock-regs 0.1.0",
 ]
+
+[[package]]
+name = "tock-regs"
+version = "0.1.0"
 

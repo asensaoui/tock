@@ -4,8 +4,8 @@ use self::Pin::*;
 use core::cell::Cell;
 use core::ops::{Index, IndexMut};
 use core::sync::atomic::{AtomicUsize, Ordering};
-use kernel::common::regs::{ReadOnly, ReadWrite, WriteOnly};
 use kernel::hil;
+use tock_regs::regs::{ReadOnly, ReadWrite, WriteOnly};
 
 #[repr(C)]
 struct Register {

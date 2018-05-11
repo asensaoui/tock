@@ -15,6 +15,7 @@ name = "cortexm4"
 version = "0.1.0"
 dependencies = [
  "kernel 0.1.0",
+ "tock-regs 0.1.0",
 ]
 
 [[package]]
@@ -29,6 +30,7 @@ dependencies = [
  "cortexm4 0.1.0",
  "kernel 0.1.0",
  "nrf5x 0.1.0",
+ "tock-regs 0.1.0",
 ]
 
 [[package]]
@@ -47,7 +49,12 @@ name = "nrf5x"
 version = "0.1.0"
 dependencies = [
  "kernel 0.1.0",
+ "tock-regs 0.1.0",
 ]
+
+[[package]]
+name = "tock-regs"
+version = "0.1.0"
 
 [metadata]
 "checksum bitfield 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)" = "f989ae9b9fff3271a712a309fce47f0c46dd3476cb40074ddfcc06ad4a76cf6a"

@@ -5,8 +5,8 @@
 //! Required to setup and configure IO pins to different modes - all depending on
 //! usage (eg. UART, GPIO, etc). It is used internally.
 
-use kernel::common::regs::ReadWrite;
 use kernel::hil;
+use tock_regs::regs::ReadWrite;
 
 #[repr(C)]
 pub struct IocRegisters {

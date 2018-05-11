@@ -1,6 +1,6 @@
 //! Implementation of the Backup System Control Interface (BSCIF) peripheral.
 
-use kernel::common::regs::{ReadOnly, ReadWrite, WriteOnly};
+use tock_regs::regs::{ReadOnly, ReadWrite, WriteOnly};
 
 #[repr(C)]
 struct BscifRegisters {

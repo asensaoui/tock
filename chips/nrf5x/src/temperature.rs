@@ -10,7 +10,7 @@
 
 use core::cell::Cell;
 use kernel;
-use kernel::common::regs::{ReadOnly, ReadWrite, WriteOnly};
+use tock_regs::regs::{ReadOnly, ReadWrite, WriteOnly};
 
 const TEMP_BASE: usize = 0x4000C000;
 

@@ -33,7 +33,7 @@
 //! * Francine Mäkelä
 //! * Date: May 04, 2018
 
-use kernel::common::regs::{FieldValue, ReadWrite};
+use tock_regs::regs::{FieldValue, ReadWrite};
 
 pub const PPI_BASE: usize = 0x4001F000;
 

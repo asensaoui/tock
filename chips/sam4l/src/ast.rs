@@ -5,10 +5,10 @@
 //! - Date: July 16, 2015
 
 use core::cell::Cell;
-use kernel::common::regs::{ReadOnly, ReadWrite, WriteOnly};
 use kernel::hil::time::{self, Alarm, Freq16KHz, Time};
 use kernel::hil::Controller;
 use pm::{self, PBDClock};
+use tock_regs::regs::{ReadOnly, ReadWrite, WriteOnly};
 
 /// Minimum number of clock tics to make sure ALARM0 register is synchronized
 ///

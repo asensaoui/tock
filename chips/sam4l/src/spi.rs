@@ -12,7 +12,6 @@ use dma::DMAChannel;
 use dma::DMAClient;
 use dma::DMAPeripheral;
 use kernel::common::peripherals::{PeripheralManagement, PeripheralManager};
-use kernel::common::regs::{self, ReadOnly, ReadWrite, WriteOnly};
 use kernel::hil::spi;
 use kernel::hil::spi::ClockPhase;
 use kernel::hil::spi::ClockPolarity;
@@ -20,6 +19,7 @@ use kernel::hil::spi::SpiMasterClient;
 use kernel::hil::spi::SpiSlaveClient;
 use kernel::{ClockInterface, ReturnCode, StaticRef};
 use pm;
+use tock_regs::regs::{self, ReadOnly, ReadWrite, WriteOnly};
 
 #[repr(C)]
 pub struct SpiRegisters {

@@ -17,7 +17,7 @@
 //!
 
 use core::cell::Cell;
-use kernel::common::regs::{ReadOnly, ReadWrite, WriteOnly};
+use tock_regs::regs::{ReadOnly, ReadWrite, WriteOnly};
 
 struct ClockRegisters {
     pub tasks_hfclkstart: WriteOnly<u32, Control::Register>, // 0x000

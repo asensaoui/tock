@@ -49,10 +49,10 @@
 // - Support continuous-mode CRC
 
 use core::cell::Cell;
-use kernel::common::regs::{FieldValue, ReadOnly, ReadWrite, WriteOnly};
 use kernel::hil::crc::{self, CrcAlg};
 use kernel::ReturnCode;
 use pm::{disable_clock, enable_clock, Clock, HSBClock, PBBClock};
+use tock_regs::regs::{FieldValue, ReadOnly, ReadWrite, WriteOnly};
 
 // Base address of CRCCU registers.  See "7.1 Product Mapping"
 const BASE_ADDRESS: *mut CrccuRegisters = 0x400A4000 as *mut CrccuRegisters;

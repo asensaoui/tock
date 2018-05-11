@@ -3,10 +3,10 @@ use core::cell::Cell;
 use gpio;
 use ioc;
 use kernel;
-use kernel::common::regs::{ReadOnly, ReadWrite, WriteOnly};
 use kernel::hil::gpio::Pin;
 use kernel::hil::uart;
 use prcm;
+use tock_regs::regs::{ReadOnly, ReadWrite, WriteOnly};
 
 const UART_BASE: usize = 0x4000_1000;
 const MCU_CLOCK: u32 = 48_000_000;

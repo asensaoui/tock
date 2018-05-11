@@ -1,8 +1,8 @@
 //! RTC driver, sensortag family
 
 use core::cell::Cell;
-use kernel::common::regs::{ReadOnly, ReadWrite};
 use kernel::hil::time::{self, Alarm, Frequency, Time};
+use tock_regs::regs::{ReadOnly, ReadWrite};
 
 #[repr(C)]
 pub struct RtcRegisters {
